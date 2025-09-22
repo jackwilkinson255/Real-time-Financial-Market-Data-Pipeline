@@ -14,51 +14,6 @@ is useful for debugging and experimenting, for example swapping out Postgres for
 4. **Storage**: A PostgreSQL database that stores the processed financial data.
 5. **Monitoring**: Contains tools for monitoring and managing the pipeline, including AKHQ for Kafka management.
 
-## Setup
-This project uses Minikube to run a local Kubernetes cluster. It deploys a financial data pipeline that includes Kafka, 
-PostgreSQL, and Debezium for real-time data processing. These are the steps for starting cluster:
-1. Install Minikube and Helm:
-   - Follow the instructions at [Minikube Installation](https://minikube.sigs.k8s.io/docs/start/) and [Helm Installation](https://helm.sh/docs/intro/install/).
-<br><br> 
-2. Start the Kubernetes cluster:
-```bash
-minikube start
-```
-
-3. Deploy helm charts:
-```bash
-helm install fdp ./fdp
-```
-
-4. Deploy releases with helmfile:
-To deploy all releases:
-```bash
-sh scripts/apply_all.sh
-```
-Note: this may take a few minutes as it needs to pull several Helm files, Docker images and set up everything.
-
-
-Steps for updating:
-1. Stop existing helm install:
-```bash
-helm uninstall fdp
-```
-
-2. Build dependencies:
-```bash
-helm dependency build ./fdp
-```
-
-3. Reinstall:
-```bash
-helm install fdp .
-```
-
-Install a particular chart:
-```bash
-helmfile -l name=connect apply
-```
-
 ## Ingestion
 The ingestion release deploys a ConfigMap and a Deployment. The ConfigMap contains the Python script that fetches
 financial data from YahooFinance with [yfinance](https://ranaroussi.github.io/yfinance/) and publishes it to Kafka.
@@ -158,11 +113,6 @@ Port forwarding:
 kubectl port-forward pod/<pod-name> 8080:8080 -d
 ingestion-ingestion-7cb8dd856c-tppd7
 ```
-
-
-
-
-
 
 ## Future work
 A number of improvements could be made to productionize this system:
