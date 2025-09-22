@@ -1,0 +1,56 @@
+releases:
+  - name: ingestion
+    namespace: {{ .Environment.Name }}
+    chart: ./charts/ingestion
+    version: 1.0.0
+    values:
+      - values/ingestion.yaml.gotmpl
+
+  - name: streaming
+    namespace: {{ .Environment.Name }}
+    chart: ./charts/streaming
+    version: 1.0.0
+    values:
+      - values/streaming.yaml.gotmpl
+
+  - name: processing
+    namespace: {{ .Environment.Name }}
+    chart: ./charts/processing
+    version: 1.0.0
+    values:
+      - values/processing.yaml.gotmpl
+
+  - name: storage
+    namespace: {{ .Environment.Name }}
+    chart: ./charts/storage
+    version: 1.0.0
+    values:
+      - values/storage.yaml.gotmpl
+
+  - name: monitoring
+    namespace: {{ .Environment.Name }}
+    chart: ./charts/monitoring
+    version: 1.0.0
+    values:
+      - values/monitoring.yaml.gotmpl
+    needs:
+      - default/streaming  # Ensure Kafka is ready before AKHQ
+    hooks:
+      - events: [ "post-install", "post-upgrade" ]
+        command: "sh"
+        args:
+          - "-c"
+          - |
+            kubectl port-forward svc/monitoring-akhq 8080:80 -n default 
+            kubectl port-forward svc/monitoring-pgadmin4 8081:80 -n default
+
+environments:
+  default:
+    values:
+      - values/environments/{{ .Environment.Name }}.yaml
+  rpi:
+    values:
+      - values/environments/{{ .Environment.Name }}.yaml
+
+helmDefaults:
+  skipDeps: false

@@ -1,0 +1,35 @@
+connect:
+  enabled: true
+  image:
+    repository: redpandadata/connect
+    tag: latest
+  args:
+    - "-c"
+    - "/etc/benthos/config.yaml"
+  extraVolumeMounts:
+    - name: benthos-config-file
+      mountPath: /etc/benthos
+      readOnly: true
+  extraVolumes:
+    - name: benthos-config-file
+      configMap:
+        name: benthos-config
+
+processing:
+  streaming:
+    bootstrap_servers: test-kafka.default.svc.cluster.local:9092
+    schema_registry_url: "http://test-schema-registry.default.svc.cluster.local:8081"
+    topics:
+      stocks: test
+      crypto: test
+    user: test
+    password: test
+  storage:
+    user: test
+    password: test
+    database: test
+    tables:
+      stocks: test
+      crypto: test
+    dsn: postgres://test
+

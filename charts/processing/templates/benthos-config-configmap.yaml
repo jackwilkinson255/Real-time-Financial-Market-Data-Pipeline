@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: benthos-config
+data:
+  config.yaml: |-
+{{ tpl (.Files.Get "config/benthos-config.yaml") . | indent 4 }}

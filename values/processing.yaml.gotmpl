@@ -1,0 +1,19 @@
+processing:
+  streaming:
+    bootstrap_servers: {{ .Values.streaming.release }}-kafka.{{ .Values.streaming.namespace }}.svc.cluster.local:9092
+    schema_registry_url: {{ .Values.streaming.release }}-schema-registry.{{ .Values.streaming.namespace }}.svc.cluster.local:8081
+    topics:
+      stocks: {{ .Values.streaming.topics.stocks }}
+      crypto: {{ .Values.streaming.topics.crypto }}
+      currency: {{ .Values.streaming.topics.currency }}
+    user: {{ .Values.streaming.users.benthos }}
+    password: {{ .Values.streaming.passwords.benthos }}
+  storage:
+    user: {{ .Values.storage.users.benthos }}
+    password: {{ .Values.storage.passwords.benthos }}
+    database: {{ .Values.storage.databases.tickers }}
+    tables:
+      stocks: {{ .Values.storage.tables.stocks }}
+      crypto: {{ .Values.storage.tables.crypto }}
+      currency: {{ .Values.storage.tables.currency }}
+    dsn: "postgres://{{ .Values.storage.users.benthos }}:{{ .Values.storage.passwords.benthos }}@{{ .Values.storage.release }}-postgresql.{{ .Values.storage.namespace }}.svc.cluster.local:5432/{{ .Values.storage.databases.tickers }}?sslmode=disable"

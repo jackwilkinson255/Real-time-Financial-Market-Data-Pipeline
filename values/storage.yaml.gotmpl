@@ -1,0 +1,24 @@
+postgresql:
+  auth:
+    database: {{ .Values.storage.databases.tickers }}
+  primary:
+    extraVolumes:
+      - name: init-sql
+        configMap:
+          name: {{ .Values.storage.release }}-init-sql
+
+storage:
+  release: {{ .Values.storage.release }}
+  namespace: {{ .Values.storage.namespace }}
+  users:
+    benthos: {{ .Values.storage.users.benthos }}
+    pgadmin: {{ .Values.storage.users.pgadmin }}
+  passwords:
+    benthos: {{ .Values.storage.passwords.benthos }}
+    pgadmin: {{ .Values.storage.passwords.pgadmin }}
+  databases:
+    tickers: {{ .Values.storage.databases.tickers }}
+  tables:
+    stocks: {{ .Values.storage.tables.stocks }}
+    crypto: {{ .Values.storage.tables.crypto }}
+    currency: {{ .Values.storage.tables.currency }}

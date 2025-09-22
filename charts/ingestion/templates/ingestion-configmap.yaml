@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.ingestion.app.name }}-config"
+data:
+  app.py: |-
+{{ tpl (.Files.Get "app/app.py") . | indent 4 }}
+
+  uv.lock: |-
+{{ tpl (.Files.Get "app/uv.lock") . | indent 4 }}
+
+  pyproject.toml: |-
+{{ tpl (.Files.Get "app/pyproject.toml") . | indent 4 }}
+
+  tickers.json: |-
+{{ tpl (.Files.Get "app/tickers.json") . | indent 4 }}

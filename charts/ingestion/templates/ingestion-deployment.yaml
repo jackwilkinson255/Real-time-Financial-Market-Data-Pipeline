@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Values.ingestion.app.name }}"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Values.ingestion.app.name }}"
+
+  template:
+    metadata:
+      labels:
+        app: "{{ .Values.ingestion.app.name }}"
+
+    spec:
+      containers:
+      - name: ingestion
+        image: "ghcr.io/astral-sh/uv:0.4.12-python3.12-bookworm"
+        command: ["/bin/bash", -c]
+        imagePullPolicy: IfNotPresent
+        args:
+        - |
+          cp /app/pyproject.toml /app/uv.lock /app/tickers.json . 
+          echo "Installing dependencies..."
+          uv sync --frozen --no-dev
+          
+          echo "Running ingestion..."
+          uv run app/app.py
+        ports:
+        - containerPort: 8081
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: "{{ .Values.ingestion.kafka.bootstrap_servers }}"
+        - name: SCHEMA_REGISTRY_URL
+          value: "{{ .Values.ingestion.kafka.schema_registry_url }}"
+        - name: CRYPTO_TOPIC
+          value: "{{ .Values.ingestion.kafka.crypto_topic }}"
+        - name: CURRENCY_TOPIC
+          value: "{{ .Values.ingestion.kafka.currency_topic }}"
+        - name: STOCKS_TOPIC
+          value: "{{ .Values.ingestion.kafka.stocks_topic }}"
+        - name: TICKERS
+          value: "AAPL"
+        - name: USER
+          value: "{{ .Values.ingestion.kafka.user }}"
+        - name: PASSWORD
+          value: "{{ .Values.ingestion.kafka.password }}"
+        - name: UV_COMPILE_BYTECODE
+          value: "1"
+        - name: UV_LINK_MODE
+          value: "copy"
+        - name: UV_TOOL_BIN_DIR
+          value: /usr/local/bin
+        volumeMounts:
+        - name: config-volume
+          mountPath: /app
+      volumes:
+      - name: config-volume
+        configMap:
+          name: "{{ .Values.ingestion.app.name }}-config"

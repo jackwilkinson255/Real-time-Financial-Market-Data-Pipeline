@@ -1,0 +1,65 @@
+akhq:
+  configuration:
+    micronaut:
+      security:
+        enabled: true
+        token:
+          jwt:
+            signatures:
+            secret:
+              generator:
+                secret: 'NewLongerSecretStringWithAtLeast32Characters'
+      server:
+        cors:
+          enabled: true
+          configurations:
+            all:
+              allowedOrigins:
+                - "*"
+    akhq:
+      connections:
+        local:
+          properties:
+            bootstrap.servers: default-kafka.default.svc.cluster.local:9092
+            security.protocol: SASL_PLAINTEXT
+            sasl.mechanism: PLAIN
+            sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="default" password="default";
+          schema-registry:
+            type: confluent
+            url: "http://default-schema-registry.default.svc.cluster.local:8081"
+
+      security:
+        default-group:
+          - no-roles
+        groups:
+          admin:
+            name: admin
+            roles:
+              - topic/read
+              - topic/insert
+              - topic/delete
+              - topic/config/update
+              - node/read
+              - node/config/update
+              - topic/data/read
+              - topic/data/insert
+              - topic/data/delete
+              - group/read
+              - group/delete
+              - group/offsets/update
+              - registry/read
+              - registry/insert
+              - registry/update
+              - registry/delete
+              - registry/version/delete
+              - acls/read
+              - connect/read
+              - connect/insert
+              - connect/update
+              - connect/delete
+              - connect/state/update
+        basic-auth:
+          - username: admin
+            password: 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+            groups:
+              - admin

@@ -1,0 +1,179 @@
+input:
+  kafka:
+    addresses:
+      - "{{ .Values.processing.streaming.bootstrap_servers }}"
+    topics:
+      - "{{ .Values.processing.streaming.topics.crypto }}"
+      - "{{ .Values.processing.streaming.topics.currency }}"
+      - "{{ .Values.processing.streaming.topics.stocks }}"
+    consumer_group: benthos-consumer
+    commit_period: 1s
+    sasl:
+      mechanism: PLAIN
+      user: "{{ .Values.processing.streaming.user }}"
+      password: "{{ .Values.processing.streaming.password }}"
+
+processor_resources:
+  - label: tickers_processor
+    mapping: |
+      root = this.without("time", "id")
+      root.ingestion_ts = (this.ingestion_ts.number() / 1000).ts_format()
+      root.ticker_ts = (this.time.number() / 1000).ts_format()
+      root.price_hint = this.price_hint.number()
+      root.benthos_ts = now()
+      root.ticker = this.id
+
+pipeline:
+  processors:
+    - schema_registry_decode:
+        url: {{ .Values.processing.streaming.schema_registry_url }}
+        avro:
+          raw_unions: true
+    - resource: tickers_processor
+    - log:
+        message: "Processed message: ${!json()}\n\n"
+        fields_mapping:
+          root = this
+
+output:
+  switch:
+    cases:
+      - check: '@kafka_topic == "{{ .Values.processing.streaming.topics.crypto }}"'
+        output:
+          sql_insert:
+            driver: postgres
+            dsn: {{ .Values.processing.storage.dsn }}
+            table: {{ .Values.processing.storage.tables.crypto }}
+            columns:
+              - benthos_ts
+              - change
+              - change_percent
+              - circulating_supply
+              - currency
+              - day_high
+              - day_low
+              - day_volume
+              - event_id
+              - exchange
+              - ingestion_ts
+              - from_currency
+              - last_size
+              - market_cap
+              - market_hours
+              - open_price
+              - price
+              - price_hint
+              - quote_type
+              - source_api
+              - ticker
+              - ticker_ts
+              - vol_24hr
+              - vol_all_currencies
+            args_mapping: |
+              root = [
+                this.benthos_ts,
+                this.change,
+                this.change_percent,
+                this.circulating_supply,
+                this.currency,
+                this.day_high,
+                this.day_low,
+                this.day_volume,
+                this.event_id,
+                this.exchange,
+                this.ingestion_ts,
+                this.from_currency,
+                this.last_size,
+                this.market_cap,
+                this.market_hours,
+                this.open_price,
+                this.price,
+                this.price_hint,
+                this.quote_type,
+                this.source_api,
+                this.ticker,
+                this.ticker_ts,
+                this.vol_24hr,
+                this.vol_all_currencies
+              ]
+      - check: '@kafka_topic == "{{ .Values.processing.streaming.topics.currency }}"'
+        output:
+          sql_insert:
+            driver: postgres
+            dsn: {{ .Values.processing.storage.dsn }}
+            table: {{ .Values.processing.storage.tables.currency }}
+            columns:
+              - benthos_ts
+              - change
+              - change_percent
+              - day_high
+              - day_low
+              - event_id
+              - exchange
+              - ingestion_ts
+              - market_hours
+              - price
+              - price_hint
+              - quote_type
+              - source_api
+              - ticker
+              - ticker_ts
+            args_mapping: |
+              root = [
+                this.benthos_ts,
+                this.change,
+                this.change_percent,
+                this.day_high,
+                this.day_low,
+                this.event_id,
+                this.exchange,
+                this.ingestion_ts,
+                this.market_hours,
+                this.price,
+                this.price_hint,
+                this.quote_type,
+                this.source_api,
+                this.ticker,
+                this.ticker_ts
+              ]
+      - check: '@kafka_topic == "{{ .Values.processing.streaming.topics.stocks }}"'
+        output:
+          sql_insert:
+            driver: postgres
+            dsn: {{ .Values.processing.storage.dsn }}
+            table: {{ .Values.processing.storage.tables.stocks }}
+            columns:
+              - benthos_ts
+              - change
+              - change_percent
+              - event_id
+              - exchange
+              - ingestion_ts
+              - market_hours
+              - price
+              - price_hint
+              - quote_type
+              - source_api
+              - ticker
+              - ticker_ts
+            args_mapping: |
+              root = [
+                this.benthos_ts,
+                this.change,
+                this.change_percent,
+                this.event_id,
+                this.exchange,
+                this.ingestion_ts,
+                this.market_hours,
+                this.price,
+                this.price_hint,
+                this.quote_type,
+                this.source_api,
+                this.ticker,
+                this.ticker_ts
+              ]
+
+logger:
+  level: DEBUG
+  format: logfmt
+  add_timestamp: false

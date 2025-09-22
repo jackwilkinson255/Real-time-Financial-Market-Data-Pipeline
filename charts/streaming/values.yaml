@@ -1,0 +1,72 @@
+streaming:
+  url: http://streaming-schema-registry.default.svc.cluster.local:8081
+  topics:
+    crypto: tickers.crypto
+    currency: tickers.currency
+    stocks: tickers.stocks
+
+kafka:
+  sasl:
+    client:
+      users:
+        - user1
+      passwords:
+        - password1
+  logPersistence:
+    enabled: "false"
+  broker:
+    persistence:
+      enabled: "false"
+#      size: 512Mi
+  controller:
+    persistence:
+      enabled: "false"
+#      size: 1024Mi
+  extraEnvVars:
+    - name: KAFKA_CFG_DELETE_TOPIC_ENABLE
+      value: "true"
+    - name: KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE
+      value: "true"
+  provisioning:
+    enabled: "true"
+    topics:
+      - name: ""
+        partitions: 3
+        replicationFactor: 1
+        config:
+          max.message.bytes: 64000
+          flush.messages: 1
+      - name: ""
+        partitions: 3
+        replicationFactor: 1
+        config:
+          max.message.bytes: 64000
+          flush.messages: 1
+      - name: ""
+        partitions: 3
+        replicationFactor: 1
+        config:
+          max.message.bytes: 64000
+          flush.messages: 1
+  kraft:
+    clusterId: 1BaW8zOWq1FpWuYr0tFtjt
+
+schema-registry:
+  auth.kafka.saslMechanism: PLAIN
+  externalKafka:
+    enabled: "true"
+    auth:
+      protocol: SASL
+      mechanism: PLAIN
+      jaas:
+        user: ""
+        password: ""
+    sasl:
+      user: ""
+      password: ""
+    listener:
+      protocol: SASL_PLAINTEXT
+    brokers:
+      - ""
+  kafka:
+    enabled: "false"

@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+name: processing
+description: Stream processing components for the financial data pipeline, including Benthos.
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: connect
+    version: 3.0.3
+    repository: https://charts.redpanda.com

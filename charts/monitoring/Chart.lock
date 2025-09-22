@@ -1,0 +1,9 @@
+dependencies:
+- name: akhq
+  repository: https://akhq.io/
+  version: 0.25.1
+- name: pgadmin4
+  repository: https://helm.runix.net
+  version: 1.47.0
+digest: sha256:9a6a9ed176af11f33e04a5346c693f2122b90fe1ada225d623bd7af8b40e7bcf
+generated: "2025-08-15T12:22:56.445436+01:00"

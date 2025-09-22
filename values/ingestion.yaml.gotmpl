@@ -1,0 +1,11 @@
+ingestion:
+  kafka:
+    bootstrap_servers: {{ .Values.streaming.release }}-kafka.{{ .Values.streaming.namespace }}.svc.cluster.local:9092
+    schema_registry_url: "http://{{ .Values.streaming.release }}-schema-registry.{{ .Values.streaming.namespace }}.svc.cluster.local:8081"
+    stocks_topic: {{ .Values.streaming.topics.stocks }}
+    crypto_topic: {{ .Values.streaming.topics.crypto }}
+    currency_topic: {{ .Values.streaming.topics.currency }}
+    user: {{ .Values.streaming.users.ingestion }}
+    password: {{ .Values.streaming.passwords.ingestion }}
+  app:
+    name: {{ .Values.ingestion.release }}-ingestion

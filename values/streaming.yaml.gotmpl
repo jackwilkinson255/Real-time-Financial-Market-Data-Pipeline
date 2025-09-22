@@ -1,0 +1,55 @@
+streaming:
+  url: http://{{ .Values.streaming.release }}-schema-registry.{{ .Values.streaming.namespace }}.svc.cluster.local:8081
+  topics:
+    stocks: {{ .Values.streaming.topics.stocks }}
+
+kafka:
+  sasl:
+    client:
+      users:
+        - "{{ .Values.streaming.users.akhq }}"
+        - "{{ .Values.streaming.users.benthos }}"
+        - "{{ .Values.streaming.users.ingestion }}"
+      passwords:
+        - "{{ .Values.streaming.passwords.akhq }}"
+        - "{{ .Values.streaming.passwords.benthos }}"
+        - "{{ .Values.streaming.passwords.ingestion }}"
+  broker:
+    persistence:
+      size: "{{ .Values.streaming.persistence.size }}"
+  provisioning:
+    topics:
+      - name: "{{ .Values.streaming.topics.stocks }}"
+      - name: "{{ .Values.streaming.topics.crypto }}"
+      - name: "{{ .Values.streaming.topics.currency }}"
+
+schema-registry:
+  externalKafka:
+    auth:
+      jaas:
+        user: {{ .Values.streaming.users.akhq }}
+        password: {{ .Values.streaming.passwords.akhq }}
+    sasl:
+      user: {{ .Values.streaming.users.akhq }}
+      password: {{ .Values.streaming.passwords.akhq }}
+    brokers:
+      - SASL_PLAINTEXT://{{ .Values.streaming.release }}-kafka.{{ .Values.streaming.namespace }}.svc.cluster.local:9092
+  kafka:
+    enabled: false
+
+  initContainers:
+    - name: wait-for-kafka
+      image: busybox:1.36
+      command:
+        - /bin/sh
+        - -c
+        - |
+          until nc -z {{ .Values.streaming.release }}-kafka.{{ .Values.streaming.namespace }}.svc.cluster.local 9092; do
+            echo "Waiting for Kafka to be ready..."
+            sleep 5
+          done
+          echo "Kafka is ready!"
+
+
+
+

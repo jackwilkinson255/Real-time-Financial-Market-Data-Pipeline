@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: add-schemas
+data:
+  crypto-values.avsc: |-
+{{ tpl (.Files.Get "scripts/schemas/crypto-values.avsc") . | indent 4 }}
+
+  currency-values.avsc: |-
+{{ tpl (.Files.Get "scripts/schemas/currency-values.avsc") . | indent 4 }}
+
+  stocks-values.avsc: |-
+{{ tpl (.Files.Get "scripts/schemas/stocks-values.avsc") . | indent 4 }}
+
+  add_schemas.py: |-
+{{ tpl (.Files.Get "scripts/add_schemas.py") . | indent 4 }}
+
+  pyproject.toml: |-
+{{ tpl (.Files.Get "scripts/pyproject.toml") . | indent 4 }}
+
+  uv.lock: |-
+{{ tpl (.Files.Get "scripts/uv.lock") . | indent 4 }}

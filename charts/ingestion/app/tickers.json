@@ -1,0 +1,14 @@
+{
+  "AAPL": {"type": "stocks"},
+  "MSFT": {"type": "stocks"},
+  "NVDA": {"type": "stocks"},
+  "AMZN": {"type": "stocks"},
+  "VUAG.L": {"type": "stocks"},
+  "BTC-USD": {"type": "crypto"},
+  "ETH-USD": {"type": "crypto"},
+  "GBP=X": {"type":  "currency"},
+  "JPY=X": {"type":  "currency"},
+  "AUD=X": {"type":  "currency"},
+  "EUR=X": {"type":  "currency"},
+  "CAD=X": {"type":  "currency"}
+}

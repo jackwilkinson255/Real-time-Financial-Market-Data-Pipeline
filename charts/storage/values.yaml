@@ -1,0 +1,39 @@
+postgresql:
+  image:
+    debug: true
+  auth:
+    postgresPassword: postgres
+    username: postgres
+    password: ""
+    database: default
+  host: postgres
+  persistence:
+    size: 512Mi
+  primary:
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "500m"
+    extraVolumeMounts:
+      - name: init-sql
+        mountPath: /docker-entrypoint-initdb.d
+    extraVolumes:
+      - name: init-sql
+        configMap:
+          name: TEST-init-sql
+
+storage:
+  release: ""
+  namespace: ""
+  users:
+    benthos: ""
+    pgadmin: ""
+  passwords:
+    benthos: ""
+    pgadmin: ""
+  databases:
+    tickers: ""
+  tables:
+    stocks: ""
+    crypto: ""
+    currency: ""

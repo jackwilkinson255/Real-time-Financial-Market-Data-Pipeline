@@ -1,0 +1,12 @@
+ingestion:
+  kafka:
+    bootstrap_servers: "streaming-kafka.default.svc.cluster.local:9092"
+    stocks_topic: ""
+    crypto_topic: ""
+    currency_topic: ""
+    user: ingestion
+    password: ingestion
+    schema_registry_url: "http://streaming-schema-registry.default.svc.cluster.local:8081"
+  app:
+    name: ingestion
+    image: ghcr.io/astral-sh/uv:0.4.12-python3.12-bookworm

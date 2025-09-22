@@ -1,0 +1,47 @@
+# For values needed across multiple helm charts
+
+
+
+
+streaming:
+  release: streaming
+  namespace: default
+  persistence:
+    size: 2Gi
+  topics:
+    stocks: "tickers.stocks"
+    crypto: "tickers.crypto"
+    currency: "tickers.currency"
+  users:
+    akhq: akhq
+    benthos: benthos
+    ingestion: ingestion
+  passwords:
+    akhq: akhq
+    benthos: benthos
+    ingestion: ingestion
+  bootstrap_servers: "{{ .Values.streaming.release }}-kafka-controller-headless.{{ .Release.Namespace }}.svc.cluster.local:9092"
+
+monitoring:
+  release: monitoring
+  namespace: default
+
+storage:
+  release: storage
+  namespace: default
+  users:
+    benthos: benthos
+    pgadmin: pgadmin
+  passwords:
+    benthos: benthos
+    pgadmin: pgadmin
+  databases:
+    tickers: tickers
+  tables:
+    stocks: stocks
+    crypto: crypto
+    currency: currency
+
+ingestion:
+  release: ingestion
+  namespace: default

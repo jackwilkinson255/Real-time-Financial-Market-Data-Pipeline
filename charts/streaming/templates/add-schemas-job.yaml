@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: add-schemas-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: add-schemas
+        image: "ghcr.io/astral-sh/uv:0.4.12-python3.12-bookworm"
+        command: ["/bin/bash", -c]
+        imagePullPolicy: IfNotPresent
+        args:
+          - |
+            echo "In app:"
+            ls -R /app
+            echo "In schemas:"
+            ls -R /app/schemas
+            echo "Installing dependencies..."
+            cp /app/pyproject.toml /app/uv.lock .
+            uv sync --frozen --no-dev
+            
+            echo "Registering schemas..."
+            source .venv/bin/activate 
+            cd app && python add_schemas.py
+        env:
+          - name: SCHEMA_REGISTRY_URL
+            value: "{{ .Values.streaming.url }}"
+        volumeMounts:
+          - name: schemas-vol
+            mountPath: /app
+      restartPolicy: Never
+      volumes:
+        - name: schemas-vol
+          configMap:
+            name: add-schemas
+            items:
+              - key: crypto-values.avsc
+                path: schemas/crypto-values.avsc
+              - key: currency-values.avsc
+                path: schemas/currency-values.avsc
+              - key: stocks-values.avsc
+                path: schemas/stocks-values.avsc
+              - key: add_schemas.py
+                path: add_schemas.py
+              - key: pyproject.toml
+                path: pyproject.toml
+              - key: uv.lock
+                path: uv.lock
+
+  backoffLimit: 1

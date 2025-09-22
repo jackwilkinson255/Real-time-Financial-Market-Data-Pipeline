@@ -1,0 +1,20 @@
+akhq:
+  configuration:
+    akhq:
+      connections:
+        local:
+          properties:
+            bootstrap.servers: "{{ .Values.streaming.release }}-kafka.{{ .Values.streaming.namespace }}.svc.cluster.local:9092"
+            sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="{{ .Values.streaming.users.akhq }}" password="{{ .Values.streaming.passwords.akhq }}";
+          schema-registry:
+            url: "http://{{ .Values.streaming.release }}-schema-registry.{{ .Values.streaming.namespace }}.svc.cluster.local:8081"
+
+pgadmin4:
+  serverDefinitions:
+    servers:
+      1:
+        Name: "Tickers Postgres DB"
+        Host: {{ .Values.storage.release }}-postgresql.{{ .Values.storage.namespace }}.svc.cluster.local
+        MaintenanceDB: {{ .Values.storage.databases.tickers }}
+        Username: {{ .Values.storage.users.pgadmin }}
+        Password: {{ .Values.storage.passwords.pgadmin }}

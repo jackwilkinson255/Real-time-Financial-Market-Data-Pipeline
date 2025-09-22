@@ -1,0 +1,22 @@
+{
+    "change": -2314.8125,
+    "change_percent": -2.0109403,
+    "circulating_supply": 19910988.0,
+    "currency": "USD",
+    "day_high": 115601.18,
+    "day_low": 112779.73,
+    "day_volume": "59802411008",
+    "exchange": "CCC",
+    "from_currency": "BTC",
+    "id": "BTC-USD",
+    "last_size": "59802411008",
+    "market_cap": 2245883590000.0,
+    "market_hours": 1,
+    "open_price": 115379.02,
+    "price": 112796.195,
+    "price_hint": "2",
+    "quote_type": 41,
+    "time": "1756065060000",
+    "vol_24hr": "59802411008",
+    "vol_all_currencies": "59802411008"
+}

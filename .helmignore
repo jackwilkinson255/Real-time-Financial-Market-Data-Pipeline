@@ -1,0 +1,10 @@
+# Various IDEs
+.project
+.idea/
+*.tmproj
+.vscode/
+
+values-generated.yaml
+.venv
+.git/
+./.git/
