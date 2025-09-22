@@ -3,9 +3,7 @@ This project deploys a real-time financial data pipeline to Kubernetes, using He
 The aim of this project is to provide an end-to-end learning environment for people wanting to learn more about real-time 
 data technologies such as Kafka, alongside containers.
 
-<p align="center">
-  <img src="pipeline.drawio.svg" width="500">
-</p>
+![pipeline.svg](pipeline.svg)
 
 ## Components
 Each component is deployed as a separate Helmfile release, based on their functionality and dependencies. This modular approach
