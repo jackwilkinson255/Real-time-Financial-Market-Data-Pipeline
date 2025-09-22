@@ -1,0 +1,21 @@
+#kafka:
+#  persistence:
+#    size: 2Gi
+#  akhq_user: "akhq"
+#  akhq_password: "akhq"
+#  benthos_user: "benthos"
+#  benthos_password: "benthos"
+#  tickers_user: "tickers"
+#  tickers_password: "tickers"
+#  bootstrap_servers: "{{ .Release.Name }}-kafka-controller-headless.{{ .Release.Namespace }}.svc.cluster.local:9092"
+#  stocks_topic: "tickers.stocks"
+#  crypto_topic: "tickers.crypto"
+#  currency_topic: "tickers.currency"
+#
+#postgres:
+#  benthos_user: "benthos"
+#  benthos_password: "benthos"
+#  tickers_db: "tickers"
+#  stocks_table: "stocks"
+#  crypto_table: "crypto"
+#  currency_table: "currency"
