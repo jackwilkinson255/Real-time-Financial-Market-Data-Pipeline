@@ -1,9 +1,52 @@
 # Real-time Financial Data Pipeline on Kubernetes
 This project deploys a real-time financial data pipeline to Kubernetes, using Helm and Helmfile for managing deployments. 
-The aim of this project is to provide an end-to-end learning environment for people wanting to learn more about real-time 
-data technologies such as Kafka, alongside containers.
+The aim of this project is to provide an end-to-end learning environment for real-time technologies such as Kafka.
 
 ![pipeline.svg](pipeline.svg)
+
+## Installation and Setup
+1. Install [docker](https://www.docker.com/) or [podman](https://podman.io/docs/installation).
+2. Install [minikube](https://minikube.sigs.k8s.io/docs/start/?arch=%2Fmacos%2Farm64%2Fstable%2Fbinary+download) or use 
+an existing Kubernetes cluster with brew. Install other dependant packages too:
+```bash
+brew install minikube kubectl helm helmfile
+```
+
+3. Add Helm repositories containing required charts:
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add akhq https://akhq.io/
+helm repo add redpanda https://charts.redpanda.com/
+helm repo update
+```
+
+4. Update sub-chart dependencies for each release, this will also add a chart lock file:
+```bash
+sh scripts/update_deps.sh
+```
+
+5. Install diff plugin:
+```bash
+helm plugin install https://github.com/databus23/helm-diff
+```
+
+6. Start minikube:
+```bash
+minikube start
+```
+
+6. In the root directory, deploy the pipeline:
+```bash
+sh scripts/deploy.sh
+```
+> Note: This may take a few minutes to complete
+
+7. Open AKHQ to check Kafka messages are being produced:
+```bash
+kubectl port-forward svc/monitoring-akhq 8080:80 &
+```
+Then navigate to `http://localhost:8080` in your browser. The default username and password are both `admin`.
+> Note: There will be no stocks data if stock exchange is closed e.g. on weekends.
 
 ## Components
 Each component is deployed as a separate Helmfile release, based on their functionality and dependencies. This modular approach
@@ -13,6 +56,7 @@ is useful for debugging and experimenting, for example swapping out Postgres for
 3. **Processing**: A Benthos worker processes Kafka messages, performs transformations, and routes events to the appropriate tables in Postgres.
 4. **Storage**: A PostgreSQL database that stores the processed financial data.
 5. **Monitoring**: Contains tools for monitoring and managing the pipeline, including AKHQ for Kafka management.
+
 
 ## Ingestion
 The ingestion release deploys a ConfigMap and a Deployment. The ConfigMap contains the Python script that fetches
@@ -57,27 +101,13 @@ GET /schemas/ids/1 HTTP/1.1
 curl -X GET http://streaming-schema-registry.default.svc.cluster.local:8081/subjects
 
 
-kcp ./charts/streaming/scripts debug-python:/scripts
-
-### Useful Commands:
-Create topic:
-```zsh
-kubectl exec -it fdp-kafka-controller-0 -- bash -c "kafka-topics.sh --bootstrap-server localhost:9092 --topic fdp-topic --create"
-```
-List topics:
-```zsh
-kubectl exec -it fdp-kafka-controller-0 -- bash -c "kafka-topics.sh --bootstrap-server localhost:9092 --list"
-```
-
-
-
 ## Storage
 PostgreSQL is used for storing raw financial data in three tables for each financial asset. 
 
 ### Postgres
 To connect to postgres, start a session in the pod:
 ```bash
-kubectl exec -it storage-postgresql-0 bash
+kubectl exec -it storage-postgresql-0 -- bash
 ```
 
 Log in:
@@ -86,14 +116,12 @@ psql -U benthos -d tickers -p 5432
 # Password is benthos
 ```
 
-
-
 List databases:
 \dt
 
 Query the data:
 ```sql
-SELECT COUNT(*) FROM finance_data_ingress;
+SELECT * FROM crypto;
 ```
 
 
@@ -113,6 +141,12 @@ Port forwarding:
 kubectl port-forward pod/<pod-name> 8080:8080 -d
 ingestion-ingestion-7cb8dd856c-tppd7
 ```
+
+## Troubleshooting
+Check the status of pods with `kubectl get pods -A`. If any pods are not in the `Running` state, check their logs with
+`kubectl logs <pod-name> -n <namespace>`.
+
+
 
 ## Future work
 A number of improvements could be made to productionize this system:

@@ -1,34 +1,42 @@
+environments:
+  default:
+    values:
+      - values/environments/default.yaml
+  rpi:
+    values:
+      - values/environments/default.yaml
+---
 releases:
   - name: ingestion
-    namespace: {{ .Environment.Name }}
+    namespace: default
     chart: ./charts/ingestion
     version: 1.0.0
     values:
       - values/ingestion.yaml.gotmpl
 
   - name: streaming
-    namespace: {{ .Environment.Name }}
+    namespace: default
     chart: ./charts/streaming
     version: 1.0.0
     values:
       - values/streaming.yaml.gotmpl
 
   - name: processing
-    namespace: {{ .Environment.Name }}
+    namespace: default
     chart: ./charts/processing
     version: 1.0.0
     values:
       - values/processing.yaml.gotmpl
 
   - name: storage
-    namespace: {{ .Environment.Name }}
+    namespace: default
     chart: ./charts/storage
     version: 1.0.0
     values:
       - values/storage.yaml.gotmpl
 
   - name: monitoring
-    namespace: {{ .Environment.Name }}
+    namespace: default
     chart: ./charts/monitoring
     version: 1.0.0
     values:
@@ -43,14 +51,6 @@ releases:
           - |
             kubectl port-forward svc/monitoring-akhq 8080:80 -n default 
             kubectl port-forward svc/monitoring-pgadmin4 8081:80 -n default
-
-environments:
-  default:
-    values:
-      - values/environments/{{ .Environment.Name }}.yaml
-  rpi:
-    values:
-      - values/environments/{{ .Environment.Name }}.yaml
 
 helmDefaults:
   skipDeps: false
